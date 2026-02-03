@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>A Question for You</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'EB Garamond', Georgia, 'Times New Roman', serif;
+            background: linear-gradient(180deg, #faf8f5 0%, #f5f0e8 50%, #f0e8e0 100%);
+            color: #4a3f3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Question View */
+        .question-view {
+            opacity: 1;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .question-view.hidden {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+        }
+
+        .intro {
+            font-size: 1.125rem;
+            font-style: italic;
+            color: #6b5c54;
+            margin-bottom: 2.5rem;
+            letter-spacing: 0.02em;
+            line-height: 1.6;
+        }
+
+        .question {
+            font-size: 1.75rem;
+            font-weight: 500;
+            color: #3d3330;
+            margin-bottom: 3rem;
+            line-height: 1.4;
+            letter-spacing: 0.01em;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            position: relative;
+            min-height: 140px;
+        }
+
+        .btn {
+            font-family: 'EB Garamond', Georgia, serif;
+            font-size: 1.125rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            padding: 0.875rem 2.5rem;
+            border: 1px solid;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            min-width: 140px;
+        }
+
+        .btn-yes {
+            background: #8b6b61;
+            color: #faf8f5;
+            border-color: #8b6b61;
+        }
+
+        .btn-yes:hover,
+        .btn-yes:active {
+            background: #7a5a50;
+            border-color: #7a5a50;
+        }
+
+        .btn-no {
+            background: transparent;
+            color: #8b6b61;
+            border-color: #c4b5ad;
+            position: relative;
+            transition: all 0.25s ease-out, left 0.3s ease-out, top 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        .btn-no:hover {
+            border-color: #8b6b61;
+        }
+
+        .btn-no.floating {
+            position: fixed;
+        }
+
+        .btn-no.shrinking {
+            transform: scale(0.85);
+        }
+
+        .btn-no.smaller {
+            transform: scale(0.7);
+            opacity: 0.7;
+        }
+
+        .btn-no.fading {
+            transform: scale(0.5);
+            opacity: 0.4;
+        }
+
+        .btn-no.vanishing {
+            transform: scale(0.3);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Riddle View */
+        .riddle-view {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            padding: 0 1rem;
+            transition: opacity 1s ease-in;
+        }
+
+        .riddle-view.visible {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+            top: auto;
+            left: auto;
+            transform: none;
+        }
+
+        .riddle {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #4a3f3a;
+            font-style: italic;
+            letter-spacing: 0.01em;
+        }
+
+        .riddle p {
+            margin-bottom: 1.75rem;
+        }
+
+        .riddle p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Decorative elements */
+        .ornament {
+            font-size: 1.5rem;
+            color: #c4b5ad;
+            margin-bottom: 2rem;
+            letter-spacing: 0.5em;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Small screen adjustments */
+        @media (max-height: 600px) {
+            body {
+                padding: 1.5rem;
+            }
+
+            .intro {
+                margin-bottom: 1.5rem;
+                font-size: 1rem;
+            }
+
+            .question {
+                font-size: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .buttons {
+                min-height: 120px;
+            }
+
+            .riddle {
+                font-size: 1.125rem;
+                line-height: 1.7;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .question {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                padding: 0.75rem 2rem;
+                font-size: 1rem;
+            }
+
+            .riddle {
+                font-size: 1.125rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="question-view" id="questionView">
+            <p class="intro">A moment, if you will...</p>
+            <h1 class="question">Will you be my Valentine?</h1>
+            <div class="buttons">
+                <button class="btn btn-yes" id="yesBtn">Yes</button>
+                <button class="btn btn-no" id="noBtn">No</button>
+            </div>
+        </div>
+
+        <div class="riddle-view" id="riddleView">
+            <div class="ornament">❧</div>
+            <div class="riddle">
+                <p>
+                    Where love is mixed and patiently made,<br>
+                    Where flour flies and joy is displayed.<br>
+                    You give the care, the taste, the art—<br>
+                    I take the plates when we're done with the part.
+                </p>
+                <p>
+                    Look where the mess goes to disappear,<br>
+                    Something sweet is waiting near.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const questionView = document.getElementById('questionView');
+            const riddleView = document.getElementById('riddleView');
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+
+            let noClickCount = 0;
+            const stages = ['floating', 'shrinking', 'smaller', 'fading', 'vanishing'];
+
+            // YES button handler
+            yesBtn.addEventListener('click', function() {
+                questionView.classList.add('hidden');
+
+                setTimeout(function() {
+                    riddleView.classList.add('visible');
+                }, 400);
+            });
+
+            // NO button handler
+            noBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                noClickCount++;
+
+                // Get viewport dimensions
+                const vw = window.innerWidth;
+                const vh = window.innerHeight;
+                const btnRect = noBtn.getBoundingClientRect();
+                const btnWidth = btnRect.width;
+                const btnHeight = btnRect.height;
+
+                // Calculate safe boundaries (with padding)
+                const padding = 20;
+                const maxX = vw - btnWidth - padding;
+                const maxY = vh - btnHeight - padding;
+
+                // Generate new random position
+                const newX = Math.max(padding, Math.random() * maxX);
+                const newY = Math.max(padding, Math.random() * maxY);
+
+                // Make button float if not already
+                if (!noBtn.classList.contains('floating')) {
+                    noBtn.classList.add('floating');
+                }
+
+                // Apply position
+                noBtn.style.left = newX + 'px';
+                noBtn.style.top = newY + 'px';
+
+                // Apply progressive stages based on click count
+                // Remove previous stage classes
+                stages.forEach(function(stage) {
+                    noBtn.classList.remove(stage);
+                });
+
+                // Add appropriate stage class
+                if (noClickCount >= 5) {
+                    noBtn.classList.add('vanishing');
+                } else if (noClickCount >= 4) {
+                    noBtn.classList.add('fading');
+                } else if (noClickCount >= 3) {
+                    noBtn.classList.add('smaller');
+                } else if (noClickCount >= 2) {
+                    noBtn.classList.add('shrinking');
+                }
+            });
+
+            // Prevent double-tap zoom on buttons
+            document.querySelectorAll('.btn').forEach(function(btn) {
+                btn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    this.click();
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
